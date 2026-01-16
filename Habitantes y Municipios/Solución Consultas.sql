@@ -65,13 +65,22 @@
 -- 8. Número total de municipios en cada provincia junto con el nombre
 --    de la misma.
 
-
+select count(municipios.código) 'total de municipios', municipios.provincia 'provincia'
+from municipios
+group by municipios.provincia;
 
 
 -- 9. Cantidad total de personas a cargo de cada cabeza de familia de las
 --    localidades de Asturias cuyo nombre empieza o termina por la letra ‘s’.
 
-
+select count(depender.dni_dependiente) 'personas dependientes',
+	habitantes.nombre 'cabeza de familia'
+from depender join habitantes on depender.dni_cabeza_familia = habitantes.dni
+	join vivienda on habitantes.código_vivienda = vivienda.código
+    join municipios on vivienda.código_municipio = municipios.código
+where municipios.provincia = 'Asturias' && (vivienda.localidad like 'S%' ||
+	vivienda.localidad like '%s')
+group by habitantes.dni, habitantes.nombre;
 
 
 -- 10. Media de personas a cargo de un cabeza de familia en cada
