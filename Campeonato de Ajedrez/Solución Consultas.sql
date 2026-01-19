@@ -1,8 +1,17 @@
 -- 1. Nombre, dirección y teléfono de todos los participantes de España.
 
+	select participantes.nombre,participantes.dirección,participantes.teléfono
+	from participantes join paises on participantes.numPaís = paises.número 
+	where paises.nombre ="España";
 
 -- 2. Nombre y dirección de todos los hoteles en los que se han alojado jugadores de España.
-    
+
+	select hoteles.nombre, hoteles.dirección
+	from paises join participantes on participantes.numPaís = paises.número
+		join alojar on participantes.numAsociado = alojar.numAsociado
+		join hoteles on alojar.nombreHotel = hoteles.nombre 
+	where paises.nombre = 'España';
+		
 
 -- 3. Nombre los participantes en cada partida junto con su nacionalidad y el número de partida.
 
@@ -34,12 +43,14 @@
 
 
 -- 10. Nombre de todos los jugadores que no han participado en partidas celebradas un lunes.
+
+
 -- 11. Nombre de los jugadores cuya media de movimientos por partida supere a la media de
 --     movimientos por partida del resto de jugadores de su país.
 
 
 -- 12. Nombre de todas las salas junto al nombre de su hotel y el número de partidas celebradas en
-       cada una de ellas.
+--     cada una de ellas.
 
 
 -- 13. Nombre, dirección y teléfono del hotel u hoteles en los que se haya celebrado el mayor número

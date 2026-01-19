@@ -85,8 +85,14 @@ group by habitantes.dni, habitantes.nombre;
 
 -- 10. Media de personas a cargo de un cabeza de familia en cada
 --     municipio de la provincia de Asturias.
-
-
+select avg(num_dep), sub.nombre
+from (select count(dni_dependiente) num_dep, municipios.código, municipios.nombre
+	  from depender join habitantes on dni_cabeza_familia = dni
+		   join vivienda on código_vivienda = vivienda.código
+           join municipios on código_municipio = municipios.código
+      where provincia = 'Asturias'
+      group by dni_cabeza_familia, municipios.código, municipios.nombre) sub
+group by código, nombre;
 
 
 -- 11. Tamaño medio en metros cuadrados de las viviendas de cada
