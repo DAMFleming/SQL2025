@@ -85,6 +85,7 @@ group by habitantes.dni, habitantes.nombre;
 
 -- 10. Media de personas a cargo de un cabeza de familia en cada
 --     municipio de la provincia de Asturias.
+
 select avg(num_dep), sub.nombre
 from (select count(dni_dependiente) num_dep, municipios.código, municipios.nombre
 	  from depender join habitantes on dni_cabeza_familia = dni
