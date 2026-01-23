@@ -55,10 +55,36 @@ WHERE capacidad = (
 --    y también el nombre de los jugadores y la fecha con el formato:
 --               <día_de_la_semana>, <día del més> de <año>
 
-
+select p1.nombre 'jugador blancas', p2.nombre 'jugador negras',
+       partidas.nombreHotel hotel, partidas.nombreSala sala,
+       concat(dayname(fecha), ', ', dayofmonth(fecha), ' de ', year(fecha)) fecha
+from participantes p1 join partidas on p1.numAsociado = blancas
+     join participantes p2 on p2.numAsociado = negras
+     join salas on partidas.nombreSala = salas.nombreSala and partidas.nombreHotel = salas.nombreHotel
+where entradas < capacidad / 2;
+     
 -- 9. Obtener el número de partida, fecha de celebración, nombre de los participantes y número de
 --    movimientos de aquellas partidas en las que el número de movimientos realizados está entre
 --    los 5 mayores.
+
+select p1.nombre blancas, p2.nombre negras, número partida, fecha, count(numMovimiento) movimientos
+from partidas join movimientos on número = numPartida
+	 join participantes p1 on p1.numAsociado = blancas
+     join participantes p2 on p2.numAsociado = negras
+group by número
+having movimientos in (
+	select count(numMovimiento) n
+    from movimientos
+    group by numPartida
+    order by n desc
+    limit 5
+);
+
+select distinct count(*) n
+from products
+group by productVendor
+order by n desc
+limit 3;
 
 
 -- 10. Nombre de todos los jugadores que no han participado en partidas celebradas un lunes.
@@ -77,13 +103,45 @@ where numAsociado not in (
 -- 12. Nombre de todas las salas junto al nombre de su hotel y el número de partidas celebradas en
 --     cada una de ellas.
 
+select nombreHotel, nombreSala, count(número) 'número de partidas'
+from partidas
+group by nombreHotel, nombreSala;
+
 
 -- 13. Nombre, dirección y teléfono del hotel u hoteles en los que se haya celebrado el mayor número
 --     de partidas.
 
+select nombre, dirección, teléfono
+from hoteles join partidas on nombre = nombreHotel
+group by nombre, dirección, teléfono
+having count(número) >= all (
+	select distinct count(número)
+    from partidas
+    group by nombreHotel
+);
 
+select nombre, dirección, teléfono
+from hoteles join partidas on nombre = nombreHotel
+group by nombre, dirección, teléfono
+having count(número) = (
+	select distinct count(número) n
+    from partidas
+    group by nombreHotel
+    order by n desc
+    limit 1
+);
 
-
+select nombre, dirección, teléfono
+from hoteles join partidas on nombre = nombreHotel
+group by nombre, dirección, teléfono
+having count(número) = (
+	select max(n)
+    from (
+		select distinct count(número) n
+		from partidas
+		group by nombreHotel
+    )
+);
 
 
 
