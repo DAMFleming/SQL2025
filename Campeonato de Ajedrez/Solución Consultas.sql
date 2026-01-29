@@ -140,7 +140,7 @@ having count(número) = (
 		select distinct count(número) n
 		from partidas
 		group by nombreHotel
-    )
+    ) sub
 );
 
 
