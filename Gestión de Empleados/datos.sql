@@ -1,0 +1,25 @@
+delete from ingenieros;
+delete from representantes;
+delete from departamentos;
+delete from directores;
+delete from empleados;
+delete from hijos;
+
+insert into empleados values (1, 'Hector', 1000);
+insert into empleados values (2, 'Paula', 1000);
+insert into empleados values (3, 'Ignacio', 1000);
+insert into empleados values (4, 'Blanca', 1000);
+insert into empleados values (10, 'Miguel', 2000);
+insert into empleados values (11, 'Clara', 2000);
+insert into directores values (10);
+insert into directores values (11);
+insert into departamentos values ('D1', 'L1', 10);
+insert into departamentos values ('D2', 'L2', 11);
+insert into ingenieros values (1, 'D1');
+insert into ingenieros values (2, 'D1');
+insert into representantes values (3, 'D2');
+insert into representantes values (4, 'D2');
+insert into hijos values (1, 'Antonio', '2009-1-10');
+insert into hijos values (2, 'Ángel', '2007-11-11');
+insert into hijos values (3, 'Valentina', '2011-9-21');
+insert into hijos values (4, 'Teresa', '2013-7-19');
