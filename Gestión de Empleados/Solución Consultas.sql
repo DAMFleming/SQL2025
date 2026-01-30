@@ -6,7 +6,14 @@
 --    departamento en el que trabaja su progenitor, ordenados en primer lugar por
 --    departamento, en segundo lugar, por edad de mayor a menor y en tercer lugar
 --    por el nombre del hijo.		
+insert into representantes values (1, 'D2');
 
+select *
+from hijos join ingenieros on empleado = nssIngeniero;
+
+select *
+from hijos join representantes on empleado = nssRepresentante;
+	
 select *
 from hijos join ingenieros on empleado = nssIngeniero
      join representantes on empleado = nssRepresentante;
@@ -52,9 +59,34 @@ where importe > 500 and empleado in (select nssIngeniero from ingenieros)
 group by departamento;
 
 
--- 5. Nombre y salario de los representantes que trabajan en el departamento
---    dirigido por el empleado con nss=33012012797.
+-- 5. Nombre y salario de los representantes que trabajan en el
+--    departamento dirigido por el empleado con nss=33012012797.
 
+SELECT e.nombre, e.salario
+FROM empleados e
+JOIN representantes r ON e.nss = r.nssRepresentante
+JOIN departamentos d ON r.departamento = d.nombre
+WHERE d.director = 5;
+
+SELECT nombre, salario
+FROM empleados
+WHERE nss IN (
+    SELECT nssRepresentante
+    FROM representantes
+    WHERE departamento = (
+        SELECT nombre
+        FROM departamentos
+        WHERE director = 5
+    )
+);
+
+SELECT nombre, salario
+FROM empleados join representantes on nss = nssRepresentante
+WHERE departamento = (
+        SELECT nombre
+        FROM departamentos
+        WHERE director = 5
+);
 
 
 -- 6. Nombre de departamento y número de empleados de los departamentos en los que
@@ -74,13 +106,27 @@ group by departamento;
 
 
 
--- 8. Código de proyecto y fecha de comienzo de aquellos proyectos controlados por
---    departamentos que han concedido becas en el año 2011.
+-- 8. Código de proyecto y fecha de comienzo de aquellos proyectos
+--    controlados por departamentos que han concedido becas en el
+--    año 2011.
 
+select distinct código, fechaComienzo 
+from proyectos join controlar on código = proyecto
+     join becar on becar.departamento = controlar.departamento
+where year(becar.fecha) = 2011;
 
+select código, fechaComienzo 
+from proyectos join controlar on código = proyecto
+where departamento in (
+	select distinct departamento
+    from becar
+    where year(fecha) = 2011
+);
+    
 
--- 9. Nombre del empleado o empleados que dirigen los departamentos que controlan
---    proyectos en los que está involucrado el ingeniero con nss=33210210977.
+-- 9. Nombre del empleado o empleados que dirigen los departamentos que
+--    controlan proyectos en los que está involucrado el ingeniero con
+--    nss=33210210977.
 
 
 
