@@ -128,27 +128,73 @@ where departamento in (
 --    controlan proyectos en los que está involucrado el ingeniero con
 --    nss=33210210977.
 
+select distinct empleados.nombre
+from empleados join departamentos on director = nss
+	join controlar on departamentos.nombre = controlar.departamento
+    join involucrar on controlar.proyecto = involucrar.proyecto
+where ingeniero = 33210210977;
+
 
 
 -- 10. Salario medio de los empleados de cada departamento.
-
-
+select departamento, avg(salario)
+from (
+	select departamento, salario
+	from empleados join representantes on nss = nssRepresentante
+	union
+	select departamento, salario
+	from empleados join ingenieros on nss = nssIngeniero
+	union
+	select departamentos.nombre departamento, salario
+	from empleados join departamentos on nss = director) sub
+group by departamento;
 
 -- 11. Listado de empleados en el que se incluya la función que desempeñan.
 
+select empleados.*, "representante"
+from empleados join representantes on nss = nssRepresentante
+where nss not in (select nssIngeniero from ingenieros)
+union
+select empleados.*, "ingeniero"
+from empleados join ingenieros on nss = nssIngeniero
+where nss not in (select nssRepresentante from representantes)
+union
+select *, "ingenieros/representantes"
+from empleados where nss in (select nssIngeniero from ingenieros) and
+				    nss in (select nssRepresentante from representantes)
+union
+select empleados.*, "director"
+from empleados join directores on nss = nssDirector;
 
 
 -- 12. Número de becas concedidas por cada departamento junto con el nombre del
 --     empleado que lo dirige.
-
+select empleados.nombre director, becar.departamento, count(*) `número de becas`
+from becar join departamentos on departamento = nombre
+join empleados on director = nss
+group by departamento;
 
 
 -- 13. Número de departamentos dirigidos por empleados que no tienen hijos.
+
+select count(departamentos.nombre)
+from departamentos
+where director not in (select distinct empleado from hijos);
 
 
 -- 14. Nombre de cada departamento y cantidad de proyectos que controla en los
 --     que están involucrados menos de cuatro ingenieros.
 
+select departamento, count(código) `número de proyectos`
+from proyectos join controlar on código = proyecto
+where código not in (
+	-- códigos de los proyectos en los que están involucrados más de tres ingenieros
+    select proyecto
+    from involucrar
+    group by proyecto
+    having count(ingeniero) > 3
+)
+group by departamento;
 
 
 -- 15. Número de becas concedidas por los departamentos en los que trabajan
