@@ -200,11 +200,39 @@ group by departamento;
 -- 15. Número de becas concedidas por los departamentos en los que trabajan
 --     aquellos ingenieros que también son representantes.
 
+select departamento, count(importe)
+from becar
+where departamento in (
+	select distinct i.departamento
+    from ingenieros i join representantes r on i.nssIngeniero = r.nssRepresentante
+)
+group by departamento;
+
+select departamento, count(importe)
+from becar
+where departamento in (
+	select distinct departamento
+    from ingenieros
+    where nssingeniero in (
+		select nssRepresentante
+        from representantes
+	)
+)
+group by departamento;
+
 
 
 -- 16. NSS y nombre de los directores que dirigen departamentos que hayan concedido
 --     becas a alguno de sus hijos.
-
+SELECT DISTINCT
+	nss,
+    empleados.nombre
+FROM
+	empleados
+		JOIN
+	departamentos ON nss = director
+		JOIN
+	becar ON empleado = director;
 
 
 -- 17. Cantidad de ingenieros involucrados en proyectos controlados por
