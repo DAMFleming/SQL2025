@@ -1,6 +1,8 @@
 -- 1. Obtener todos los detalles de todos los artículos de CACERES.
 
-
+select *
+from ARTICULOS
+where CIUDAD = 'CACERES';
 
 -- 2. Obtener todos los valores de P# para los proveedores que abastecen el artículo T1.
 
@@ -12,7 +14,8 @@ where `T#` = 'T1';
 -- 3. Obtener la lista de pares de atributos (COLOR, CIUDAD) de la tabla componentes eliminando
 --    los pares duplicados.
 
-
+select distinct COLOR, CIUDAD
+from COMPONENTES;
 
 -- 4. Obtener de la tabla de artículos los valores de T# y CIUDAD donde el nombre de la ciudad
 --    acaba en D o contiene al menos una E.
@@ -32,13 +35,18 @@ WHERE `T#` = 'T1' AND `C#` = 'C1';
 -- 6. Obtener los valores de TNOMBRE en orden alfabético para los artículos abastecidos por
 --    el proveedor P1.
 
-
+select distinct NOMBRE
+from ARTICULOS a join ENVIOS e on a.`T#` = e.`T#`
+where `P#` = 'P1'
+order by NOMBRE;
 
 
 -- 7. Obtener los valores de C# para los componentes suministrados para cualquier artículo de
 --    MADRID.
 
-
+select distinct `C#`
+from ENVIOS e join ARTICULOS a on e.`T#` = a.`T#`
+where CIUDAD = 'MADRID';
 
 
 -- 8. Obtener todos los valores de C# de los componentes de menor peso.
@@ -49,16 +57,35 @@ WHERE PESO <= ALL (SELECT DISTINCT PESO FROM COMPONENTES);
 
 -- 9. Obtener los valores de P# para los proveedores que suministren los artículos T1 y T2.
 
+select distinct `P#`
+from ENVIOS
+where `T#` = 'T1' or `T#` = 'T2';
+
+select distinct `P#`
+from ENVIOS
+where `T#` in ('T1', 'T2');
 
 -- 10. Obtener los valores de P# para los proveedores que suministran para un artículo de
 --     SEVILLA o MADRID un componente ROJO.
 
+select distinct `P#`
+from ENVIOS e join ARTICULOS a on e.`T#` = a.`T#`
+     join COMPONENTES c on e.`C#` = c.`C#`
+where (a.CIUDAD = 'SEVILLA' or a.CIUDAD = 'MADRID') and COLOR = 'ROJO';
+
+select distinct `P#`
+from ENVIOS e join ARTICULOS a on e.`T#` = a.`T#`
+     join COMPONENTES c on e.`C#` = c.`C#`
+where a.CIUDAD in ('SEVILLA', 'MADRID') and COLOR = 'ROJO';
 
 
 -- 11. Obtener, mediante subconsultas, los valores de C# para los componentes suministrados para
 --     algún artículo de SEVILLA por un proveedor de SEVILLA.
 
-
+select distinct `C#`
+from ENVIOS
+where `T#` in (select `T#` from ARTICULOS where CIUDAD = 'SEVILLA') and
+      `P#` in (select `P#` from PROVEEDORES where CIUDAD = 'SEVILLA');
 
 
 
