@@ -238,15 +238,44 @@ FROM
 -- 17. Cantidad de ingenieros involucrados en proyectos controlados por
 --     departamentos distintos a aquel en el que trabajan.
 
+select count(distinct nssIngeniero)
+from ingenieros join involucrar on nssIngeniero = ingeniero
+		join controlar on involucrar.proyecto = controlar.proyecto
+where ingenieros.departamento <> controlar.departamento;
 
 
 -- 18. Sueldo máximo de los empleados que no dirigen un departamento y que tienen
 --     hijos a los que no se les ha concedido ninguna beca.
 
-
+select max(salario)
+from empleados join hijos on nss = hijos.empleado
+where nss not in (select * from directores) and
+	  nss not in (select distinct empleado from becar);
+      
+select max(salario)
+from empleados
+where nss in (select distinct empleado from hijos) and
+	  nss not in (select * from directores) and
+	  nss not in (select distinct empleado from becar);
 
 -- 19. Número de empleados de cada departamento que no están involucrados en ningún
 --     proyecto.
+
+select departamento, count(nss)
+from (
+	select departamento, nss
+    from empleados join ingenieros on nss = nssIngeniero
+    where nss not in (select distinct ingeniero from involucrar)
+    union
+    select departamento, nss
+    from empleados join representantes on nss = nssRepresentante
+) sub
+group by departamento;
+
+
+
+
+
 
 
 
