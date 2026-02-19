@@ -88,8 +88,11 @@ where `T#` in (select `T#` from ARTICULOS where CIUDAD = 'SEVILLA') and
       `P#` in (select `P#` from PROVEEDORES where CIUDAD = 'SEVILLA');
 
 
-
 -- 12. Obtener los valores de T# para los artículos que usan al menos un componente que se puede obtener con el proveedor P1.
+
+
+
+
 -- 13. Obtener todas las ternas (CIUDAD, C#, CIUDAD) tales que un proveedor de la primera ciudad suministre el componente especificado para un artículo montado en la segunda ciudad.
 -- 14. Repetir el ejercicio anterior pero sin recuperar las ternas en los que los dos valores de ciudad sean los mismos.
 -- 15. Obtener el número de suministros, el de artículos distintos suministrados y la cantidad total de artículos suministrados por el proveedor P2.
