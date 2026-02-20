@@ -88,15 +88,55 @@ where `T#` in (select `T#` from ARTICULOS where CIUDAD = 'SEVILLA') and
       `P#` in (select `P#` from PROVEEDORES where CIUDAD = 'SEVILLA');
 
 
--- 12. Obtener los valores de T# para los artículos que usan al menos un componente que se puede obtener con el proveedor P1.
+-- 12. Obtener los valores de T# para los artículos que usan al menos un componente que se puede
+--     obtener con el proveedor P1.
+
+SELECT DISTINCT e.`T#`
+from ENVIOS e
+where `C#` IN (SELECT `C#` FROM ENVIOS WHERE `P#`='P1');
+
+
+INSERT INTO ENVIOS VALUES('P5', 'C1', 'T3', 100);
+
+-- 13. Obtener todas las ternas (CIUDAD, C#, CIUDAD) tales que un proveedor de la
+--     primera ciudad suministre el componente especificado para un artículo montado
+--     en la segunda ciudad.
+
+SELECT DISTINCT P.CIUDAD, `C#`, A.CIUDAD
+FROM PROVEEDORES P JOIN ENVIOS E ON P.`P#`= E.`P#`
+     JOIN ARTICULOS A ON E.`T#` = A.`T#`;
+
+
+-- 14. Repetir el ejercicio anterior pero sin recuperar las ternas en los que los dos valores
+--     de ciudad sean los mismos.
+
+SELECT DISTINCT P.CIUDAD, `C#`, A.CIUDAD
+FROM PROVEEDORES P JOIN ENVIOS E ON P.`P#`= E.`P#`
+     JOIN ARTICULOS A ON E.`T#` = A.`T#`
+WHERE P.CIUDAD <> A.CIUDAD;
+
+-- 15. Obtener el número de envíos de P2, el número de componentes distintos enviados
+--     por P2  y la cantidad total de componentes enviados por P2.
+
+select count(*) `número de envíos`,
+       count(distinct `C#`) `número de componentes distintos`,
+       sum(CANTIDAD)
+from ENVIOS
+where `P#` = 'P2';
+
+select count(*) `número de envíos`,
+       count(distinct `C#`) `número de componentes distintos`,
+       (SELECT sum(CANTIDAD) FROM ENVIOS where `P#` = 'P2')
+from ENVIOS;
+
+
+-- 16. Obtener la cantidad total de componentes enviados en los envíos de un
+--     mismo componente C# para un mismo artículo T#.
 
 
 
 
--- 13. Obtener todas las ternas (CIUDAD, C#, CIUDAD) tales que un proveedor de la primera ciudad suministre el componente especificado para un artículo montado en la segunda ciudad.
--- 14. Repetir el ejercicio anterior pero sin recuperar las ternas en los que los dos valores de ciudad sean los mismos.
--- 15. Obtener el número de suministros, el de artículos distintos suministrados y la cantidad total de artículos suministrados por el proveedor P2.
--- 16. Para cada artículo y componente suministrado obtener los valores de C#, T# y la cantidad total correspondiente.
+
 -- 17. Obtener los valores de T# de los artículos abastecidos al menos por un proveedor que no viva en MADRID y que no esté en la misma ciudad en la que se monta el artículo.
 -- 18. Obtener los valores de P# para los proveedores que suministran al menos un componente suministrado al menos por un proveedor que suministra al menos un componente ROJO.
 -- 19. Obtener los identificadores de artículos, T#, para los que se ha suministrado algún componente del que se haya suministrado una media superior a 320 artículos.
