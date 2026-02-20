@@ -133,11 +133,30 @@ from ENVIOS;
 -- 16. Obtener la cantidad total de componentes enviados en los envíos de un
 --     mismo componente C# para un mismo artículo T#.
 
+select `C#`, `T#`, sum(CANTIDAD)
+from ENVIOS
+group by `C#`, `T#`;
 
 
 
+-- 17. Obtener los valores de T# de los artículos abastecidos al menos por un proveedor que no
+--     viva en MADRID y que no esté en la misma ciudad en la que se monta el artículo.
 
--- 17. Obtener los valores de T# de los artículos abastecidos al menos por un proveedor que no viva en MADRID y que no esté en la misma ciudad en la que se monta el artículo.
+select distinct a.`T#`
+from PROVEEDORES p join ENVIOS e on p.`P#` = e.`P#`
+     join ARTICULOS a on e.`T#` = a.`T#`
+where p.CIUDAD != 'MADRID' and p.CIUDAD != a.CIUDAD;
+
+select distinct `T#`
+from ARTICULOS a
+where `T#` in (
+	select distinct `T#`
+    from PROVEEDORES p JOIN ENVIOS e on p.`P#` = e.`P#`
+    WHERE CIUDAD <> 'MADRID' and CIUDAD != a.CIUDAD);
+    
+
+
+
 -- 18. Obtener los valores de P# para los proveedores que suministran al menos un componente suministrado al menos por un proveedor que suministra al menos un componente ROJO.
 -- 19. Obtener los identificadores de artículos, T#, para los que se ha suministrado algún componente del que se haya suministrado una media superior a 320 artículos.
 -- 20. Seleccionar los identificadores de proveedores que hayan realizado algún envío con Cantidad mayor que la media de los envíos realizados para el componente a que corresponda dicho envío.
