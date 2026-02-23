@@ -155,20 +155,109 @@ where `T#` in (
     WHERE CIUDAD <> 'MADRID' and CIUDAD != a.CIUDAD);
     
 
+-- 18. Obtener los valores de P# para los proveedores que han suministrado al menos un
+--     componente que a su vez también haya sido suministrado por proveedores que hayan
+--     suministrado al menos un componente ROJO.
+
+select distinct  `P#`
+from ENVIOS
+where `C#` in (
+	select distinct `C#`
+	from ENVIOS
+	where `P#` in (
+		select distinct `P#`
+		from ENVIOS e join COMPONENTES c on e.`C#` = c.`C#`
+		where COLOR = 'AMARILLO'
+	)
+);
+
+INSERT INTO COMPONENTES VALUES ('C7', 'C31', 'AMARILLO', 20, 'SEVILLA');
+INSERT INTO ENVIOS VALUES('P6', 'C7', 'T3', 60);
+INSERT INTO ENVIOS VALUES('P6', 'C1', 'T3', 60);
+INSERT INTO PROVEEDORES VALUES('P6', 'PEPE', '10', 'MADRID');
+DELETE FROM ENVIOS WHERE `C#`= 'C7';
+UPDATE ENVIOS SET CANTIDAD = 500 WHERE `C#` = 'C7';
+
+-- 19. Obtener los T# para los que se ha suministrado algún componente del que se haya
+--     suministrado una media superior a 320 artículos.
+
+select distinct `T#`
+FROM ENVIOS
+where `C#` IN (
+	SELECT `C#`
+	FROM ENVIOS
+	group by `C#`
+	having avg(CANTIDAD) > 490
+);
 
 
--- 18. Obtener los valores de P# para los proveedores que suministran al menos un componente suministrado al menos por un proveedor que suministra al menos un componente ROJO.
--- 19. Obtener los identificadores de artículos, T#, para los que se ha suministrado algún componente del que se haya suministrado una media superior a 320 artículos.
--- 20. Seleccionar los identificadores de proveedores que hayan realizado algún envío con Cantidad mayor que la media de los envíos realizados para el componente a que corresponda dicho envío.
--- 21. Seleccionar los identificadores de componentes suministrados para el artículo 'T2' por el proveedor 'P2'.
+-- 20. Seleccionar los P# que hayan realizado algún envío con CANTIDAD mayor que la media
+--     de los envíos realizados para el componente a que corresponda dicho envío.
+
+SELECT DISTINCT `P#`
+FROM ENVIOS E
+WHERE CANTIDAD > (
+	-- SUBCONSULTA CORRELACIONADA
+	SELECT AVG(CANTIDAD)
+    FROM ENVIOS
+    WHERE `C#`= E.`C#`
+);
+
+
+-- 21. Seleccionar los identificadores de componentes suministrados para el artículo 'T2'
+--     por el proveedor 'P2'.
+
+
+
 -- 22. Seleccionar todos los datos de los envíos realizados de componentes cuyo color no sea
--- 'ROJO'.
--- 23. Seleccionar los identificadores de componentes que se suministren para los artículos 'T1' y 'T2'.
--- 24. Seleccionar el identificador de proveedor y el número de envíos de componentes de color
--- 'ROJO' llevados a cabo por cada proveedor.
+--     'ROJO'.
+
+
+
+-- 23. Seleccionar los identificadores de componentes que se suministren para los artículos
+--     'T1' y 'T2'.
+
+
+
+-- 24. Seleccionar el número de envíos de componentes de color 'ROJO' por cada P#.
+
+SELECT `P#`, COUNT(*)
+FROM ENVIOS e JOIN COMPONENTES c ON e.`C#`=c.`C#`
+WHERE COLOR='ROJO'
+group by `P#`
+order by `P#`;
+      
+SELECT P.`P#`, COUNT(`C#`)
+FROM PROVEEDORES P LEFT JOIN (
+	SELECT `P#`, E.`C#`
+	FROM ENVIOS E JOIN COMPONENTES C ON E.`C#` = C.`C#`
+	WHERE COLOR = 'ROJO') S ON P.`P#` = S.`P#`
+group by `P#`
+order by `P#`;
+      
+       
 -- 25. Seleccionar los colores de componentes suministrados por el proveedor 'P1'.
--- 26. Seleccionar los datos de envío y nombre de ciudad de aquellos envíos que cumplan que el artículo, proveedor y componente son de la misma ciudad.
--- 27. Seleccionar los nombres de los componentes que son suministrados en una cantidad total superior a 500.
+
+
+
+
+-- 26. Seleccionar los datos de envío y nombre de ciudad de aquellos envíos que cumplan
+--     que el artículo, proveedor y componente son de la misma ciudad.
+
+SELECT E.*, P.CIUDAD
+FROM ENVIOS E JOIN PROVEEDORES P ON E.`P#` = P.`P#`
+     JOIN COMPONENTES C ON E.`C#` = C.`C#`
+     JOIN ARTICULOS A ON E.`T#` = A.`T#`
+WHERE P.CIUDAD = C.CIUDAD AND C.CIUDAD = A.CIUDAD;
+
+-- 27. Seleccionar los nombres de los componentes que son suministrados en una cantidad total
+--     superior a 500.
+
+SELECT NOMBRE
+FROM COMPONENTES C JOIN ENVIOS E ON C.`C#` = E.`C#`
+GROUP BY C.`C#`, NOMBRE
+HAVING SUM(CANTIDAD) > 500;
+
 -- 28. Seleccionar los identificadores de proveedores que residan en Sevilla y no suministren más de dos artículos distintos.
 -- 29. Seleccionar los identificadores de artículos para los cuales todos sus componentes se fabrican en una misma ciudad.
 -- 30. Seleccionar los identificadores de artículos para los que se provean envíos de todos los componentes existentes en la base de datos.
