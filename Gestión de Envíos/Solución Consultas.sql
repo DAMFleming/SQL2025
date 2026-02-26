@@ -258,7 +258,75 @@ FROM COMPONENTES C JOIN ENVIOS E ON C.`C#` = E.`C#`
 GROUP BY C.`C#`, NOMBRE
 HAVING SUM(CANTIDAD) > 500;
 
--- 28. Seleccionar los identificadores de proveedores que residan en Sevilla y no suministren más de dos artículos distintos.
--- 29. Seleccionar los identificadores de artículos para los cuales todos sus componentes se fabrican en una misma ciudad.
--- 30. Seleccionar los identificadores de artículos para los que se provean envíos de todos los componentes existentes en la base de datos.
--- 31. Seleccionar los códigos de proveedor y artículo que suministran al menos dos componentes de color 'ROJO'.
+-- 28. Seleccionar los identificadores de proveedores que residan en Sevilla
+--     y no suministren componentes para más de dos artículos distintos.
+
+select P.`P#`
+from PROVEEDORES P LEFT JOIN ENVIOS E ON P.`P#` = E.`P#`
+where CIUDAD = 'SEVILLA'
+group by `P#`
+having count(distinct `T#`) < 3;
+
+select `P#`
+from PROVEEDORES
+where CIUDAD = 'SEVILLA' AND `P#` not in (
+	SELECT `P#`
+    FROM ENVIOS
+    group by `P#`
+    having count(distinct `T#`) > 2
+);
+
+SELECT * FROM PROVEEDORES;
+INSERT INTO PROVEEDORES VALUES ('P7', 'PEPÍN', 20, 'SEVILLA');
+
+
+-- 29. Seleccionar los identificadores de artículos para los cuales todos sus
+--     componentes se fabrican en una misma ciudad.
+
+select `T#`
+from ENVIOS E join COMPONENTES C on E.`C#` = C.`C#`
+group by `T#`
+having count(distinct CIUDAD) = 1;
+
+-- 30. Seleccionar los identificadores de artículos para los que se hayan enviado
+--     todos los componentes existentes en la base de datos.
+
+select `T#`
+from ENVIOS
+group by `T#`
+having count(distinct `C#`) = (
+	select count(`C#`)
+	from COMPONENTES
+);
+
+
+-- 31. Seleccionar los códigos de proveedor y artículo para los que se han enviado
+--     al menos dos componentes de color 'ROJO'.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
