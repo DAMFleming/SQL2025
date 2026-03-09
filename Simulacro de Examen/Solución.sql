@@ -69,6 +69,51 @@ where federaciones.nombre = 'Federación de Deportes de Invierno del Principado 
 -- 8. Nombre de las estaciones en las que solo se hayan celebrado pruebas
 --    individuales o en las que solo se han celebrado pruebas por equipos.
 
+select e.nombre
+from estaciones e join celebrar c on e.codigo = c.estacion
+	 left join pindividual pi on c.prueba = pi.prueba
+     left join pequipo pe on c.prueba = pe.prueba
+group by e.codigo, e.nombre
+having count(pi.prueba) = 0 or count(pe.prueba) = 0;
+
+select e.nombre, "equipo" tipo
+from estaciones e join celebrar c on e.codigo = c.estacion
+	 left join pindividual pi on c.prueba = pi.prueba
+group by e.codigo, e.nombre
+having count(pi.prueba) = 0
+union
+select e.nombre, "individuales" tipo
+from estaciones e join celebrar c on e.codigo = c.estacion
+     left join pequipo pe on c.prueba = pe.prueba
+group by e.codigo, e.nombre
+having count(pe.prueba) = 0;
+
+
+select distinct e.nombre
+from estaciones e join celebrar c on e.codigo = c.estacion
+where e.codigo not in (
+		select distinct c2.estacion
+		from celebrar c2 join pindividual pi2 on c2.prueba = pi2.prueba
+	) or e.codigo not in (
+		select distinct c3.estacion
+		from celebrar c3 join pequipo pe2 on c3.prueba = pe2.prueba
+    );
+    
+select distinct e.nombre, "prueba de equipo" tipo
+from estaciones e join celebrar c on e.codigo = c.estacion
+where e.codigo not in (
+		select distinct c2.estacion
+		from celebrar c2 join pindividual pi2 on c2.prueba = pi2.prueba
+)
+union
+select distinct e.nombre, "prueba individual" tipo
+from estaciones e join celebrar c on e.codigo = c.estacion
+where e.codigo not in (
+		select distinct c3.estacion
+		from celebrar c3 join pequipo pe2 on c3.prueba = pe2.prueba
+      );
+	 
+
 
 
 -- 9. DNI y nombre de los esquiadores que, habiendo participado en más de 10
