@@ -95,9 +95,34 @@ where numAsociado not in (
 	select distinct numAsociado
 	from jugadores join partidas on numAsociado = blancas || numAsociado = negras
 	where dayofweek(fecha) = 2);
+    
+select nombre
+from participantes left join partidas on numAsociado = blancas || numAsociado = negras
+where dayofweek(fecha) = 2
+group by participantes.numAsociado
+having count(partidas.número) = 0;
 
 -- 11. Nombre de los jugadores cuya media de movimientos por partida supere a la media de
 --     movimientos por partida del resto de jugadores de su país.
+
+select nombre
+from (
+	select numAsociado, nombre, numPaís, partidas.número, count(*) numMovimientos
+	from participantes join partidas on numAsociado = blancas || numAsociado = negras 
+	 			       join movimientos on partidas.número = movimientos.numPartida
+	group by participantes.numAsociado, partidas.número) sub1
+group by numAsociado
+having avg(numMovimientos) >= all (
+	select avg(numMovimientos2)
+	from (
+		select pa.numAsociado, pa.nombre, pa.numPaís, pr.número, count(*) numMovimientos2
+		from participantes pa join partidas pr on pa.numAsociado = pr.blancas || pa.numAsociado = pr.negras 
+						   join movimientos m on pa.número = m.numPartida
+		where pa.numPaís = sub1.numPaís
+		group by pa.numAsociado, pa.número) sub2
+	group by sub2.numAsociado
+);
+
 
 
 -- 12. Nombre de todas las salas junto al nombre de su hotel y el número de partidas celebradas en
