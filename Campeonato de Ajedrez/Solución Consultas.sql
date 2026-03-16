@@ -115,7 +115,7 @@ group by numAsociado
 having avg(numMovimientos) >= all (
 	select avg(numMovimientos2)
 	from (
-		select pa.numAsociado, pa.nombre, pa.numPaís, pr.número, count(*) numMovimientos2
+		select pa.numAsociado, count(*) numMovimientos2
 		from participantes pa join partidas pr on pa.numAsociado = pr.blancas || pa.numAsociado = pr.negras 
 						   join movimientos m on pa.número = m.numPartida
 		where pa.numPaís = sub1.numPaís
