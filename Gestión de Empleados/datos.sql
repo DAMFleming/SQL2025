@@ -1,9 +1,15 @@
+delete from especialidades;
 delete from ingenieros;
 delete from representantes;
 delete from departamentos;
 delete from directores;
 delete from empleados;
 delete from hijos;
+delete from becar;
+delete from involucrar;
+delete from controlar;
+delete from proyectos;
+
 
 insert into empleados values (1, 'Hector', 1000);
 insert into empleados values (2, 'Paula', 1000);

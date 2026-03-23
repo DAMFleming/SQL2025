@@ -36,7 +36,7 @@
 		
 		select year(v.fecha) `año`, avg(cantidad) media
 		from ventas v join (
-		    select `númeroVenta`, COUNT(*) as cantidad
+		    select `númeroVenta`, sum(cantidad) as cantidad
 		    from apuntar
 		    group by númeroVenta
 		) sub on v.`número`= sub.`númeroVenta`
@@ -110,6 +110,12 @@
 		
 --  8. Para cada año, indicar la cantidad de ventas en las que intervienen medicamentos suministrados por más de tres
 --     laboratorios distintos.
+
+		select year(v.fecha) `año`, count(v.`número`) ventas
+        from ventas v join apuntar a on v.`número` = a.`númeroVenta`
+                      join suministrados s on a.`códigoMedicamento` = s.`códigoMedicamento`
+		group by `año`, v.`número`
+        having count(distinct s.`códigoLaboratorio`) > 3;
 		
 		Select year(v.fecha) `año`, COUNT(*) ventas
 		from ventas v join (
